@@ -1,8 +1,14 @@
 import React from "react"
 import Navbar from "./components/Navbar"
-import Card from "./components/Card"
-import "./App.css"
+import {Card} from "./components/Card"
 import data from "./data/data.js"
+import styled from "styled-components"
+
+styled.body`
+  margin:0px;
+  font-family: 'Nanum Gothic', sans-serif;
+`
+
 
 function App(){
   const mappedData = data.map(item=>
@@ -10,7 +16,6 @@ function App(){
      )
   return(
     <div>
-      
         <Navbar/>
         {mappedData}
     </div>
