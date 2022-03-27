@@ -1,0 +1,14 @@
+body {
+  margin: 0;
+  font-family: 'Barlow', sans-serif;
+  font-size:1.5em;
+}
+
+html{
+  background-image: url("../public/cool-background.png");
+  background-repeat: no-repeat;
+  height: auto;
+  min-height: 100%;
+  background-size:cover;
+  background-color:lightblue;
+}
