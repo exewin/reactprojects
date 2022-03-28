@@ -1,21 +1,44 @@
 import React from "react"
 import styled from "styled-components"
 import {nanoid} from "nanoid"
+import {decodeHtml} from "./GlobalFunctions"
 
 const Answer = (props) =>{
 
-    //const random = () => Math.floor(Math.random() * 100)
+    const borderStyling = () =>{
+        let styling = '2px solid white'
+        if(props.trueAnswer === "hidden")
+            if(props.selected)
+                styling = '2px solid yellow'
+            else
+                styling = '2px solid white'
+        else if(props.trueAnswer === "true")
+            if(props.selected)
+                styling = '2px solid #3d3'
+            else
+                styling = '2px dashed green'
+        else if(props.trueAnswer === "false")
+            if(props.selected)
+                styling = '2px solid red'
+            else
+                styling = '2px solid white'
+
+        return styling
+    }
 
     const Answer = styled.button`
     background: none;
     font-family: 'Nunito Sans', sans-serif;
     font-size: 18px;
     border-radius: 5px;
-    border: ${props.selected ? '2px solid yellow' : '2px solid white'};
+    border: ${borderStyling()};
     min-width: 75px;
-    cursor: pointer;
+    order: ${props.position};
+    cursor: ${props.trueAnswer === "hidden" ? 'pointer' : 'default'};
     &:hover{
-        border: ${props.selected ? '2px solid #dd2' : '2px solid #99f'};
+        border: ${props.trueAnswer === "hidden" ?
+        props.selected ? '2px solid #dd2' : '2px solid #99f'
+        : borderStyling()};
     }
     `
 
@@ -23,7 +46,7 @@ const Answer = (props) =>{
         <Answer
         key={nanoid()}
         onClick={()=>props.handleClick(props.questionId, props.text)}
-        >{props.text}</Answer>
+        >{decodeHtml(props.text)}</Answer>
     )
 }
 

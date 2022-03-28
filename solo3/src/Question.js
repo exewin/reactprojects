@@ -2,14 +2,16 @@ import React from "react"
 import styled from "styled-components"
 import {nanoid} from "nanoid"
 import Answer  from "./Answer"
+import {decodeHtml} from "./GlobalFunctions"
 
 
 const Question = (props) =>{
 
     /* CSS */
-    const borderColor = "#ddd"
+    const borderColor = "white"
 
     const QuestionBlock = styled.div`
+    background-color: rgba(222, 222, 68, .4);
     display:flex;
     flex-direction: column;
     border:2px solid ${borderColor};
@@ -44,26 +46,29 @@ const Question = (props) =>{
     `
     /* End CSS */
 
-    const createAnswer = content => {
+    const createAnswer = (content, index) => {
         return(
             <Answer
             questionId={props.questionId} 
             text={content} 
-            handleClick={props.handleClick} 
-            selected={content == props.selected ? true : false}
+            handleClick={props.quizEnded ? ()=>{} : props.handleClick} 
+            trueAnswer={props.quizEnded ? content === props.correctAnswer ? "true" : "false" : "hidden"}
+            selected={content === props.selected ? true : false}
+            position={props.randomPositions[index]}
             key={nanoid()}
             />
         )
     }
 
-    const wrongAnswers = props.incorrectAnswers.map(answer => createAnswer(answer))
-    const correctAnswer = createAnswer(props.correctAnswer)
+    const correctAnswer = createAnswer(props.correctAnswer, 0)
+    const wrongAnswers = props.incorrectAnswers.map((answer, index) => createAnswer(answer, index+1))
+    
 
 
     return(
         <QuestionBlock>
             <Category>{props.category}</Category>
-            <Question>{props.question}</Question>
+            <Question>{decodeHtml(props.question)}</Question>
             <AnswersBlock>
             {wrongAnswers} 
             {correctAnswer}

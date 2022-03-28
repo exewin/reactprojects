@@ -6,12 +6,14 @@ import {nanoid} from "nanoid"
 
 const App = () =>{
 
+  //CSS
   const Header = styled.h1`
     font-family: 'Nunito Sans', sans-serif;
     background-image: linear-gradient(to left, indigo, blue, green, orange, red);   
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+    font-size: 50px;
   `
 
   const Paragraph = styled.p`
@@ -19,14 +21,13 @@ const App = () =>{
   `
   const Button = styled.button`
     font-family: 'Nunito Sans', sans-serif;
+    margin-bottom: 15px;
     padding: 10px 20px;
     background: none;
     font-size: 25px;
     border-radius: 5px;
     min-width: 75px;
     cursor: pointer;
-    &:hover{
-    }
   `
   const Container = styled.div`
     display:flex;
@@ -35,22 +36,52 @@ const App = () =>{
     flex-direction: column;
   `
 
-  const [quizStarted, setQuizStarted] = useState(false)
-  const [questions, setQuestions] = useState([])
+  //End CSS
 
-  useEffect(()=>{
-    fetch("https://opentdb.com/api.php?amount=5")
+  const QIUZ_LENGTH = 5;
+
+  const [quizState, setQuizState] = useState(0)
+  const [questions, setQuestions] = useState([])
+  const [points, setPoints] = useState(0)
+
+
+  const getRandomInt = max => Math.floor(Math.random() * max);
+  const setRandomPosition = () =>{
+    return [getRandomInt(4),getRandomInt(4),getRandomInt(4),getRandomInt(4)]
+  }
+
+  const reset = useEffect(()=>{
+    fetch("https://opentdb.com/api.php?amount="+QIUZ_LENGTH+"&difficulty=easy")
     .then(response => response.json())
-    .then(data=>setQuestions(data.results.map(object=>({...object, selected:""}))))
-  },[])
+    .then(data=>setQuestions(data.results.map(object=>(
+      {...object, selected:"", randomPositions: setRandomPosition()}
+      ))))
+    .then(quizState === 3 && setQuizState(1))
+    console.log("effect")
+  },[quizState != 3])
 
   const selectAnswer = (questionId, answer) =>{
     setQuestions(prev => prev.map((object,index)=>
       questionId==index?
       {...object, selected:answer}
       :object))
- 
-      //console.log(questions) ty szmato
+  }
+
+  const checkAnswers = () =>{
+      let points = 0;
+      questions.forEach(question =>{
+        if(question.selected == question.correct_answer)
+          points++
+      })
+      setPoints(points)
+      setQuizState(2)
+  }
+
+  const checkResetButton = () =>{
+    if(quizState === 1)
+      checkAnswers()
+    else if(quizState === 2)
+      setQuizState(3)
   }
 
   const mappedQuestions = questions.map((quest, index) =>
@@ -58,26 +89,29 @@ const App = () =>{
   key={nanoid()}
   category={quest.category}
   question={quest.question}
+  questionId={index}
   correctAnswer={quest.correct_answer}
   incorrectAnswers={quest.incorrect_answers}
+  quizEnded={quizState == 2 ? true : false}
   selected={quest.selected}
-  questionId={index}
+  randomPositions={quest.randomPositions}
   handleClick={selectAnswer}
   />)
 
+  console.log(quizState)
 
-
-  return(
-    !quizStarted ?
+  return( 
+    quizState === 0 ?
     <Container>
       <Header>RANDOM QUIZ</Header>
       <Paragraph>Answer five completely random questions</Paragraph>
-      <Button onClick={()=>setQuizStarted(true)}>Start quiz</Button>
+      <Button onClick={()=>setQuizState(1)}>Start quiz</Button>
     </Container>
     :
     <Container>
       {mappedQuestions}
-      <Button onClick={()=>console.log("check answers")}>Check answers</Button>
+      <Paragraph>{quizState === 2 && `Score: ${points}/${questions.length}`}</Paragraph>
+      <Button onClick={checkResetButton}>{quizState === 1 ? "Check answers" : "New quiz"}</Button>
     </Container>
   )
 }
