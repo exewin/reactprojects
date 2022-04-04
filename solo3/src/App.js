@@ -3,6 +3,7 @@ import styled from "styled-components"
 import Question from "./Question"
 import {nanoid} from "nanoid"
 import LoadingAnimation from "./LoadingAnimation"
+import axios from "axios"
 
 const Header = styled.h1`
   font-family: 'Nunito Sans', sans-serif;
@@ -12,7 +13,6 @@ const Header = styled.h1`
   color: transparent;
   font-size: 50px;
 `
-
 const Paragraph = styled.p`
 
   `
@@ -32,16 +32,15 @@ const Container = styled.div`
     justify-content:center;
     flex-direction: column;
   `
-
 const AllQuestions = styled.div`
-  display:grid;
+    display:grid;
 `
 
 export const QUIZ_STATES = {
-  START: 'START',
-  QUIZ: 'QUIZ',
-  LOADING: 'LOADING',
-  RESULTS: 'RESULTS',
+    START: 'START',
+    QUIZ: 'QUIZ',
+    LOADING: 'LOADING',
+    RESULTS: 'RESULTS',
 }
 
 const App = () => {
@@ -55,16 +54,25 @@ const App = () => {
     return [getRandomInt(4),getRandomInt(4),getRandomInt(4),getRandomInt(4)]
   }
 
-  useEffect(()=>{
+  const fetchQuestions = () => {
     if(quizState === QUIZ_STATES.LOADING) {
-      fetch(`https://opentdb.com/api.php?amount=${sliderValue}&difficulty=easy`)
-        .then(response => response.json())
-        .then(data => setQuestions(data.results.map(object=>(
+      axios.get(`https://opentdb.com/api.php?amount=${sliderValue}&difficulty=easy`)
+      .then(response => {
+        setQuestions(response.data.results.map(object=>(
           {...object, selected:"", randomPositions: setRandomPosition()}
-        ))))
-        .then(() => setQuizState(QUIZ_STATES.QUIZ))
+        )))
+        setQuizState(QUIZ_STATES.QUIZ)
+      })
+      .catch(error => {
+        console.log(error);
+      })
     }
+  }
+
+  useEffect(()=>{
+    fetchQuestions()
   },[quizState])
+
 
   
   const selectAnswer = (questionId, answer) =>{
