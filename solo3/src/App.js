@@ -32,6 +32,10 @@ const Container = styled.div`
     flex-direction: column;
   `
 
+const AllQuestions = styled.div`
+  display:grid;
+`
+
 export const QUIZ_STATES = {
   START: 'START',
   QUIZ: 'QUIZ',
@@ -123,7 +127,7 @@ const App = () => {
       default:
         return(
           <Container>
-            {mappedQuestions}
+            <AllQuestions>{mappedQuestions}</AllQuestions>
             <Paragraph>{quizState === QUIZ_STATES.RESULTS && `Score: ${points}/${questions.length}`}</Paragraph>
             <Container style={{flexDirection: 'row'}}>
               <Button onClick={()=>setQuizState(QUIZ_STATES.START)}>Menu</Button>

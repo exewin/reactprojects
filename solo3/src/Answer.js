@@ -12,9 +12,9 @@ const borderStyling = props =>{
             styling = '2px solid white'
     else if(props.trueAnswer === "true")
         if(props.selected)
-            styling = '2px solid #3d3'
+            styling = '2px solid #7e7'
         else
-            styling = '2px dashed green'
+            styling = '2px dashed #3f3'
     else if(props.trueAnswer === "false")
         if(props.selected)
             styling = '2px solid red'
@@ -34,7 +34,7 @@ const AnswerBtn = styled.button`
     order: ${props => props.componentProps.position};
     cursor: ${props => props.componentProps.trueAnswer === "hidden" ? 'pointer' : 'default'};
     &:hover{
-        border: ${props => props.componentProps.trueAnswer === "hidden" ? props.componentProps.selected ? '2px solid #dd2' : '2px solid #99f' : borderStyling(props)};
+        border: ${props => props.componentProps.trueAnswer === "hidden" ? props.componentProps.selected ? '2px solid #dd2' : '2px solid #f3f' : borderStyling(props.componentProps)};
     }
 `
 

@@ -7,11 +7,11 @@ import {decodeHtml} from "./GlobalFunctions"
 const borderColor = "white"
 
 const QuestionBlock = styled.div`
-    background-color: rgba(222, 222, 68, .4);
+    background-color: rgba(89, 89, 188, .4);
     display:flex;
     flex-direction: column;
     border:2px solid ${borderColor};
-    max-width: 800px;
+    max-width: 600px;
     margin:10px;
     border-radius: 5px;
     `
