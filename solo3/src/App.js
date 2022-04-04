@@ -17,12 +17,12 @@ const Paragraph = styled.p`
   `
 const Button = styled.button`
     font-family: 'Nunito Sans', sans-serif;
-    margin-bottom: 15px;
+    margin: 15px 5px;
     padding: 10px 20px;
     background: none;
     font-size: 25px;
     border-radius: 5px;
-    min-width: 75px;
+    width: 250px;
     cursor: pointer;
   `
 const Container = styled.div`
@@ -35,6 +35,7 @@ const Container = styled.div`
 export const QUIZ_STATES = {
   START: 'START',
   QUIZ: 'QUIZ',
+  LOADING: 'LOADING',
   RESULTS: 'RESULTS',
 }
 
@@ -50,15 +51,17 @@ const App = () => {
   }
 
   useEffect(()=>{
-    if(quizState === QUIZ_STATES.QUIZ) {
+    if(quizState === QUIZ_STATES.LOADING) {
       fetch(`https://opentdb.com/api.php?amount=${sliderValue}&difficulty=easy`)
         .then(response => response.json())
         .then(data => setQuestions(data.results.map(object=>(
           {...object, selected:"", randomPositions: setRandomPosition()}
         ))))
+        .then(() => setQuizState(QUIZ_STATES.QUIZ))
     }
   },[quizState])
 
+  
   const selectAnswer = (questionId, answer) =>{
     setQuestions(prev => prev.map((object,index)=>
       questionId===index?
@@ -76,11 +79,13 @@ const App = () => {
       setQuizState(QUIZ_STATES.RESULTS)
   }
 
-  const checkResetButton = () =>{
-    if(quizState === QUIZ_STATES.QUIZ)
+  const checkStartResetButton = () =>{
+    if(quizState === QUIZ_STATES.START)
+      setQuizState(QUIZ_STATES.LOADING)
+    else if(quizState === QUIZ_STATES.QUIZ)
       checkAnswers()
     else if(quizState === QUIZ_STATES.RESULTS)
-      setQuizState(QUIZ_STATES.QUIZ)
+      setQuizState(QUIZ_STATES.LOADING)
   }
 
   const mappedQuestions = questions.map((quest, index) =>
@@ -97,23 +102,36 @@ const App = () => {
   handleClick={selectAnswer}
   />)
 
-  console.log(quizState)
 
-  return(
-    quizState === QUIZ_STATES.START ?
-    <Container>
-      <Header>RANDOM QUIZ</Header>
-      <input type={'range'} min={1} max={10} value={sliderValue} onChange={e => setSliderValue(parseInt(e.target.value))} />
-      <Paragraph>Answer five completely random questions</Paragraph>
-      <Button onClick={()=>setQuizState(QUIZ_STATES.QUIZ)}>Start quiz</Button>
-    </Container>
-    :
-    <Container>
-      {mappedQuestions}
-      <Paragraph>{quizState === QUIZ_STATES.RESULTS && `Score: ${points}/${questions.length}`}</Paragraph>
-      <Button onClick={checkResetButton}>{quizState === QUIZ_STATES.QUIZ ? "Check answers" : "New quiz"}</Button>
-    </Container>
-  )
+    switch(quizState){
+      case QUIZ_STATES.START:
+        return(
+          <Container>
+            <Header>RANDOM QUIZ</Header>
+            <Paragraph>Answer random quiz questions</Paragraph>
+            <Paragraph>{sliderValue}</Paragraph>
+            <input type={'range'} min={1} max={10} value={sliderValue} onChange={e => setSliderValue(parseInt(e.target.value))} />
+            <Button onClick={checkStartResetButton}>Start quiz</Button>
+          </Container>
+        )
+      case QUIZ_STATES.LOADING:
+        return(
+          <Container>
+            <Paragraph>Loading...</Paragraph>
+          </Container>
+        )
+      default:
+        return(
+          <Container>
+            {mappedQuestions}
+            <Paragraph>{quizState === QUIZ_STATES.RESULTS && `Score: ${points}/${questions.length}`}</Paragraph>
+            <Container style={{flexDirection: 'row'}}>
+              <Button onClick={()=>setQuizState(QUIZ_STATES.START)}>Menu</Button>
+              <Button onClick={checkStartResetButton}>{quizState === QUIZ_STATES.QUIZ ? "Check answers" : "New quiz"}</Button>
+            </Container>
+          </Container>
+        )
+    }
 }
 
 export default App
