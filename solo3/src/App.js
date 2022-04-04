@@ -2,6 +2,7 @@ import React, {useState, useEffect} from "react"
 import styled from "styled-components"
 import Question from "./Question"
 import {nanoid} from "nanoid"
+import LoadingAnimation from "./LoadingAnimation"
 
 const Header = styled.h1`
   font-family: 'Nunito Sans', sans-serif;
@@ -122,6 +123,7 @@ const App = () => {
         return(
           <Container>
             <Paragraph>Loading...</Paragraph>
+            <LoadingAnimation/>
           </Container>
         )
       default:
