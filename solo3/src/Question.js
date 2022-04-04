@@ -4,13 +4,9 @@ import {nanoid} from "nanoid"
 import Answer  from "./Answer"
 import {decodeHtml} from "./GlobalFunctions"
 
+const borderColor = "white"
 
-const Question = (props) =>{
-
-    /* CSS */
-    const borderColor = "white"
-
-    const QuestionBlock = styled.div`
+const QuestionBlock = styled.div`
     background-color: rgba(222, 222, 68, .4);
     display:flex;
     flex-direction: column;
@@ -20,7 +16,7 @@ const Question = (props) =>{
     border-radius: 5px;
     `
 
-    const Category = styled.h6`
+const Category = styled.h6`
     margin: 0;
     border-bottom:2px solid ${borderColor};
     border-right: 2px solid ${borderColor};
@@ -30,13 +26,13 @@ const Question = (props) =>{
     cursor: default;
     `
 
-    const Question = styled.p`
+const QuestionParagraph = styled.p`
     margin:5px;
     padding:5px 12px;
     cursor: default;
     `
-    
-    const AnswersBlock = styled.div`
+
+const AnswersBlock = styled.div`
     display:flex;
     align-items: center;
     justify-content: center;
@@ -44,16 +40,17 @@ const Question = (props) =>{
     gap:15px;
 
     `
-    /* End CSS */
+
+const Question = (props) =>{
 
     const createAnswer = (content, index) => {
         return(
             <Answer
-            questionId={props.questionId} 
-            text={content} 
-            handleClick={props.quizEnded ? ()=>{} : props.handleClick} 
+            questionId={props.questionId}
+            text={content}
+            handleClick={props.quizEnded ? ()=>{} : props.handleClick}
             trueAnswer={props.quizEnded ? content === props.correctAnswer ? "true" : "false" : "hidden"}
-            selected={content === props.selected ? true : false}
+            selected={content === props.selected}
             position={props.randomPositions[index]}
             key={nanoid()}
             />
@@ -62,15 +59,15 @@ const Question = (props) =>{
 
     const correctAnswer = createAnswer(props.correctAnswer, 0)
     const wrongAnswers = props.incorrectAnswers.map((answer, index) => createAnswer(answer, index+1))
-    
+
 
 
     return(
         <QuestionBlock>
             <Category>{props.category}</Category>
-            <Question>{decodeHtml(props.question)}</Question>
+            <QuestionParagraph>{decodeHtml(props.question)}</QuestionParagraph>
             <AnswersBlock>
-            {wrongAnswers} 
+            {wrongAnswers}
             {correctAnswer}
             </AnswersBlock>
         </QuestionBlock>
